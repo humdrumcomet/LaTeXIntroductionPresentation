@@ -1,0 +1,757 @@
+% arara: lualatex: { shell: yes }
+% arara: makeglossaries
+% arara: biber
+% arara: lualatex: { shell: yes }
+% arara: lualatex: { shell: yes }
+
+
+% Demo report and presentation prepared by Aaron English (humdrumcomet on github)
+\documentclass{beamer}
+% Beamer format setup
+\usetheme[progressbar=frametitle, numbering=fraction]{metropolis}
+\setbeameroption{show notes on second screen}
+\setbeamertemplate{note page}[plain]
+\setbeamerfont{note page}{size=\Large}
+\setbeamercovered{transparent, still covered={\opaqueness<1->{65}},again covered={\opaqueness<1->{65}}}
+
+\usepackage{fontspec}
+\usepackage{geometry} % useful for defining page geometries
+\usepackage[style=ieee,backend=biber]{biblatex} % for handling bibliographies
+\usepackage{float} % added control over
+\usepackage{graphicx} % tools for inclusion of graphics
+\usepackage{booktabs} % adding commands to improve the look of tables
+\usepackage{csvsimple} % simplify table creation by importing .csv files directly
+\usepackage{siunitx} % consistent notation and correct formatting of units
+\DeclareSIUnit{\torr}{Torr} % Custom unit definition
+\usepackage{xcolor} % to access the named colour LightGray
+\definecolor{LightGray}{gray}{0.9}
+\usepackage{minted} % inclusion of code blocks with syntax highlighting and
+\setminted{linenos=flase, autogobble, fontsize=\scriptsize, breaklines=true, bgcolor=LightGray} % set global options for minted environments
+\setmintedinline{bgcolor={}}
+\usepackage{chemformula} % for writing chemical formulae
+\usepackage[useregional]{datetime2}
+\usepackage[duration=30]{pdfpc}
+\usepackage[debug, section=section, acronym, symbols]{glossaries} % Glossaries package
+
+
+% siunitx package setup
+\sisetup{
+load-configurations = abbreviations,
+detect-family = true,
+detect-weight = true,
+per-mode = reciprocal,
+input-digits = { 0123456789\pi\dots },
+input-comparators = { <=>\approx\ge\geq\gg\le\leq\ll\sim\gtrsim\lesssim },
+table-figures-integer = 3,
+table-figures-decimal = 2,
+table-auto-round,
+}%
+
+% Bibliography .bib file locations should maybe be local?
+\addbibresource[location=local]{./accelerators.bib}
+
+% Add Constants list using glossary
+\newglossary[cgls]{constants}{cstog}{cstig}{Constants}
+% Alphabetize glossary and acronyms list
+\makeglossaries
+
+%%% Constants
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newglossaryentry{c}
+{
+    type=constants,
+    name={\ensuremath{c}},
+    description={\mbox{} speed of light (\SI{2.997924e8}{\meter\per\second})}
+}
+\newglossaryentry{boltz}
+{
+    type=constants,
+    name={\ensuremath{k_{B}}},
+    description={\mbox{} Boltzmann constant (\SI{8.617330e-5}{\electronvolt\per\kelvin})}
+}
+\newglossaryentry{eps0}
+{
+    type=constants,
+    name={\ensuremath{\varepsilon_{0}}},
+    description={\mbox{} permittivity of free space (\SI{8.854187e-12}{\farad\per\meter})}
+}
+\newglossaryentry{eq}
+{
+    type=constants,
+    name={\ensuremath{e}},
+    description={\mbox{} elementary charge (\SI{1.602176e-19}{\coulomb})}
+}
+
+%%% Symbols
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newglossaryentry{mg}
+{
+    type=symbols,
+    name={\ensuremath{G}},
+    description={Mosfet Gate}
+}
+\newglossaryentry{md}
+{
+    type=symbols,
+    name={\ensuremath{D}},
+    description={Mosfet Drain}
+}
+\newglossaryentry{ms}
+{
+    type=symbols,
+    name={\ensuremath{S}},
+    description={Mosfet Source}
+}
+\newglossaryentry{press}
+{
+    type=symbols,
+    name={\ensuremath{P}},
+    description={Pressure (units of \si{\torr})}
+}
+\newglossaryentry{time}
+{
+    type=symbols,
+    name={\ensuremath{t}},
+    description={time (units of minutes)}
+}
+\newglossaryentry{ener}
+{
+    type=symbols,
+    name={\ensuremath{E}},
+    description={Energy}
+}
+\newglossaryentry{efermi}
+{
+    type=symbols,
+    name={\ensuremath{E_{f}}},
+    description={Fermi Energy of a Material}
+}
+\newglossaryentry{fermiDist}
+{
+    type=symbols,
+    name={\ensuremath{f(E)}},
+    description={The Fermi-Dirac distribution}
+}
+\newglossaryentry{econd}
+{
+    type=symbols,
+    name={\ensuremath{E_{C}}},
+    description={Conduction band energy level}
+}
+\newglossaryentry{evalence}
+{
+    type=symbols,
+    name={\ensuremath{E_{V}}},
+    description={Valence band energy level}
+}
+\newglossaryentry{egap}
+{
+    type=symbols,
+    name={\ensuremath{E_{G}}},
+    description={Bandgap}
+}
+\newglossaryentry{temp}
+{
+    type=symbols,
+    name={\ensuremath{T}},
+    description={Temperature (\si{\kelvin})}
+}
+\newglossaryentry{rd}
+{
+    type=symbols,
+    name={\ensuremath{R_{D}}},
+    description={Resistance}
+}
+\newglossaryentry{vout}
+{
+    type=symbols,
+    name={\ensuremath{V_{out}}},
+    description={Output voltage}
+}
+\newglossaryentry{vin}
+{
+    type=symbols,
+    name={\ensuremath{V_{in}}},
+    description={Input voltage}
+}
+
+%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Acronym Only
+\newglossaryentry{ndfeb}
+{
+    type=\acronymtype,
+    name={NdFeB},
+    description={Neodymium Iron Boron Rare Earth Permanent Magnet},
+    first={Neodymium iron boron (NdFeB)}
+}
+\newglossaryentry{smco}
+{
+    type=\acronymtype,
+    name={SmCo},
+    description={Samarium Cobalt Rare Earth Permanent Magnet},
+    first={Samarium cobalt (SmCo)}
+}
+\newglossaryentry{cnc}
+{
+    type=\acronymtype,
+    name={CNC},
+    description={Computer Numerically Controlled},
+    first={Computer Numerically Controlled (CNC)}
+}
+\newglossaryentry{ptfe}
+{
+    type=\acronymtype,
+    name={PTFE},
+    description={Polytetraflouroethylene (PTFE), commonly referred to by the brand name Teflon, is a synthetic polymer with highly desirable electrical breakdown characteristics},
+    first={Polytetraflouroethylene (PTFE)}
+}
+
+%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Glossary Only
+\newglossaryentry{cpp}
+{%
+    name={C++},
+    description={C++ is a programming language that can be used as an object oriented programming language, an imperative programming language, and still provide low-level memory control. Note: All C++ code used in this work is compiled under the C++11 standard}
+}
+\newglossaryentry{python}
+{%
+    name={Python},
+    description={Python is a flexible scripting language that can be used as an imperative language, an object oriented language. Note: All python code used in this work is written and executed using Python3.6}
+}
+\newglossaryentry{ibsimu}
+{%
+    name={IBSIMU},
+    description={IBSIMU is a \gls{cpp} library for ion optics, space-charge calculation, and plasma extraction. It is able to import 2-D and 3-D geometries as exported in .STL or .DXF file formats. It also allows for mathematical definition of geometries. Note: Version 1.0.6 of the IBSIMU library was used for this work \cite{acc:14}}
+}
+\newglossaryentry{ansys}
+{
+    name={ANSYS},
+    description={ANSYS Multiphysics is a software suite for multiphysics modelling and simulation}
+}
+
+%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Glossary and Acronym
+\newglossaryentry{uhvag}
+{%
+ name={UHV},
+ description={Ultra High Vacuum (UHV) is a term which refers to vacuum pressures in the range of \SI{1e-3}{\torr} to \SI{1e-8}{\torr}\cite{acc:13}}
+}
+\newglossaryentry{uhva}
+{%
+ type=\acronymtype,
+ name={UHV},
+ description={Ultra High Vacuum},
+ first={Ultra High Vacuum (UHV)\glsadd{uhvag}},
+ see=[Glossary:]{uhvag}
+}
+\DTMsavedate{presentation}{2023-01-25}
+\title{Hello \LaTeX}
+\subtitle{An Introduction to the Typesetting Tool}
+\author{Aaron English}
+\date{\DTMusedate{presentation}}
+
+\begin{document}
+    \begin{frame}[noframenumbering, plain]
+        \titlepage
+    \end{frame}
+        \note[itemize]{
+          \item introduce myself
+          \item name
+          \item phd student
+          \item research in fusion
+          \item like open source
+        }
+    % \section*{Workshop Introduction}
+        \begin{frame}
+            \frametitle{Workshop Series}
+            \begin{enumerate}[Workshop 1:]
+                \addtolength{\itemindent}{4em}
+                \item An introduction to \LaTeX
+                \item More Powerful \LaTeX~Features
+                \item Modularity and \LaTeX~in Different Environments
+                \item Reproducibility and Experimental \LaTeX~Usage
+            \end{enumerate}
+        \end{frame}
+        \note[itemize]{
+          \item Introduce workshop series
+          \item broken up into 4
+          \item will explore increasingly sophisticated use
+          \item describe sessions
+        }
+        \begin{frame}
+            \frametitle{Workshop Layout}
+            \begin{enumerate}
+                \item Introduction to and Motivation for Learning \LaTeX
+                \item Pizza Break
+                \item Live coding walkthrough
+                \item Let's Go!
+            \end{enumerate}
+        \end{frame}
+        \note[itemize]{
+          \item describe this session
+        }
+    \section{Motivation}\label{sct:motiv}
+        \begin{frame}
+            \frametitle{Setting the Stage}
+            \begin{itemize}
+                \item Bad documents cost the reader energy
+                \item Good documents cost the writer energy
+                \item Eliminate (or mitigate) the tradeoff with \LaTeX
+            \end{itemize}
+        \end{frame}
+        \note[itemize]{
+          \item bad doc
+          \begin{itemize}
+            \item inconsistent notation
+            \item inconsistent font
+            \item out of date references to material
+            \item inaccurate values
+            \item inconsistent units
+          \end{itemize}
+          \item good doc cost examples
+          \item revisiting your work carries double cost
+          \item assumes word processors are the only choice
+        }
+        \begin{frame}
+            \frametitle{Introducing \LaTeX}
+            \begin{itemize}
+                \item A typesetting tool - Not WYSIWYG
+                \item Decouples content from formatting
+                \item The de facto standard in research and academia
+                \item One of the most sophisticated typesetting tools available
+            \end{itemize}
+        \end{frame}
+        \note[itemize]{
+          \item A different approach to word processors
+          \item latex takes that and compiles it
+          \item originally developed in the 80's repeatedly shown to be the most powerful
+        }
+        \begin{frame}
+            \frametitle{Notable Features of \LaTeX}
+            \begin{itemize}
+                \item Consistent high quality documents
+                \item Reduce your cognitive load - when reading and writing
+                \item Automation
+                \item Modularize your work
+                \item Open source
+                \item Extensible
+            \end{itemize}
+        \end{frame}
+        \note[itemize]{
+          \item programmatic, enforces consistency
+          \item you define what you want, and how you want it
+          \item latex takes that and compiles it
+          \item not constrained to metaphors of real world documents
+          \item use the computer to take the burden of minutiae
+          \item highly modular, reuse your work
+          \item open source, extensible
+          \item explore examples
+        }
+    \section{Basics of Preparing a \LaTeX~Document}
+        \begin{frame}
+            \frametitle{The Environment - Overleaf}
+            \begin{itemize}
+                \item Cloud based - consistent build environments
+                \item Collaborative editing capabilities
+                \item Good place to start
+                \begin{figure}
+                    \begin{centering}
+                        \includegraphics[width=\linewidth]{Images/overleafEnv.png}
+                        \caption{The Overleaf editing environment}
+                        \label{fig:overleafEnv}
+                    \end{centering}
+                \end{figure}
+            \end{itemize}
+        \end{frame}
+        \begin{frame}[fragile]
+            \frametitle{Commands}
+            \begin{minted}{tex}
+                \command[<some options>]{<arguments>}
+            \end{minted}
+            \begin{itemize}
+                \item Differentiate \LaTeX~instructions from text
+                \item optional arguments passed in \mintinline{tex}{[]}
+                \item Required arguments passed in \mintinline{tex}{{}}
+            \end{itemize}
+        \end{frame}
+        \begin{frame}[fragile]
+            \frametitle{The \mintinline{tex}{.tex} File}
+                \begin{columns}[onlytextwidth]%
+                    \begin{column}{0.4\textwidth}%
+                        \begin{itemize}
+                            \item<1> A plain-text file
+                            \item<1> Two main parts
+                            \item<2|visible@2-> Preamble - Setup
+                            \item<3|visible@3> Body - Content
+                        \end{itemize}
+                    \end{column}
+                    \begin{column}{0.6\textwidth}%
+                        \begin{onlyenv}<1>
+                            \begin{minted}{tex}
+                                \documentclass[hidelinks, 12pt]{article}
+                                \usepackage{geometry}
+                                \usepackage{hyperref}
+                                \usepackage[tbtags]{amsmath}
+                                \usepackage{amsfonts}
+                                \usepackage{amssymb}
+                                \usepackage[utf8]{inputenc}
+                                \usepackage[T1]{fontenc}
+                                \begin{document}
+                                    <your document code>
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<2>
+                            \begin{minted}[highlightlines={1-8}]{tex}
+                                \documentclass[hidelinks, 12pt]{article}
+                                \usepackage{geometry}
+                                \usepackage{hyperref}
+                                \usepackage[tbtags]{amsmath}
+                                \usepackage{amsfonts}
+                                \usepackage{amssymb}
+                                \usepackage[utf8]{inputenc}
+                                \usepackage[T1]{fontenc}
+                                \begin{document}
+                                    <your document code>
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<3>
+                            \begin{minted}[highlightlines={9-11}]{tex}
+                                \documentclass[hidelinks, 12pt]{article}
+                                \usepackage{geometry}
+                                \usepackage{hyperref}
+                                \usepackage[tbtags]{amsmath}
+                                \usepackage{amsfonts}
+                                \usepackage{amssymb}
+                                \usepackage[utf8]{inputenc}
+                                \usepackage[T1]{fontenc}
+                                \begin{document}
+                                    <your document code>
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                    \end{column}
+                \end{columns}
+        \end{frame}
+        \begin{frame}[fragile]
+            \frametitle{Preamble Elements}
+                \begin{columns}[onlytextwidth]%
+                    \begin{column}{0.4\textwidth}%
+                        \begin{itemize}
+                            \item<1|visible@1-> Document class
+                            \item<2|visible@2-> Packages imports
+                            \item<3|visible@3-> Additional document setup
+                        \end{itemize}
+                    \end{column}
+                    \begin{column}{0.6\textwidth}%
+                        \begin{onlyenv}<1>
+                            \begin{minted}[highlightlines={1}]{tex}
+                                \documentclass[hidelinks, 12pt]{article}
+                                \usepackage{geometry}
+                                \usepackage{hyperref}
+                                \usepackage[tbtags]{amsmath}
+                                \usepackage{amsfonts}
+                                \usepackage{amssymb}
+                                \usepackage[utf8]{inputenc}
+                                \usepackage[T1]{fontenc}
+                                ...
+                                \title{My First Document}
+                                \date{\today}
+                                \author{Aaron English}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<2>
+                            \begin{minted}[highlightlines={2-8}]{tex}
+                                \documentclass[hidelinks, 12pt]{article}
+                                \usepackage{geometry}
+                                \usepackage{hyperref}
+                                \usepackage[tbtags]{amsmath}
+                                \usepackage{amsfonts}
+                                \usepackage{amssymb}
+                                \usepackage[utf8]{inputenc}
+                                \usepackage[T1]{fontenc}
+                                ...
+                                \title{My First Document}
+                                \date{\today}
+                                \author{Aaron English}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<3>
+                            \begin{minted}[highlightlines={10-12}]{tex}
+                                \documentclass[hidelinks, 12pt]{article}
+                                \usepackage{geometry}
+                                \usepackage{hyperref}
+                                \usepackage[tbtags]{amsmath}
+                                \usepackage{amsfonts}
+                                \usepackage{amssymb}
+                                \usepackage[utf8]{inputenc}
+                                \usepackage[T1]{fontenc}
+                                ...
+                                \title{My First Document}
+                                \date{\today}
+                                \author{Aaron English}
+                            \end{minted}
+                        \end{onlyenv}
+                    \end{column}
+                \end{columns}
+        \end{frame}
+        \begin{frame}[fragile]
+            \frametitle{Body Elements}
+                \begin{columns}[onlytextwidth]%
+                    \begin{column}{0.4\textwidth}%
+                        \begin{itemize}
+                            \item<1|visible@1-> Begin document
+                            \item<2|visible@2-> Add title
+                            \item<3|visible@3-> Add table of contents
+                            \item<4|visible@4-> Sections
+                            \item<4|visible@4-> ... and subsections
+                            \item<5|visible@5-> Add text
+                            \item<6|visible@6-> Environments
+                                \begin{itemize}
+                                    \item Equations
+                                    \item Figures
+                                    \item Tables
+                                    \item Code blocks
+                                    \item and more
+                                \end{itemize}
+                        \end{itemize}
+                    \end{column}
+                    \begin{column}{0.6\textwidth}%
+                        \begin{onlyenv}<1>
+                            \begin{minted}[highlightlines={1-3}]{tex}
+                                \begin{document}
+
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<2>
+                            \begin{minted}[highlightlines={2}]{tex}
+                                \begin{document}
+                                  \maketitle
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<3>
+                            \begin{minted}[highlightlines={3}]{tex}
+                                \begin{document}
+                                  \maketitle
+                                  \tableofcontents
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<4>
+                            \begin{minted}[highlightlines={4-5}]{tex}
+                                \begin{document}
+                                  \maketitle
+                                  \tableofcontents
+                                  \section{Introduction}
+                                    \subsection{Sub-Intro}
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<5>
+                            \begin{minted}[highlightlines={6}]{tex}
+                                \begin{document}
+                                  \maketitle
+                                  \tableofcontents
+                                  \section{Introduction}
+                                    \subsection{Sub-Intro}
+                                    Some actual text content
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<6>
+                            \begin{minted}[highlightlines={7-10}]{tex}
+                                \begin{document}
+                                  \maketitle
+                                  \tableofcontents
+                                  \section{Introduction}
+                                    \subsection{Sub-Intro}
+                                    Some actual text content
+                                    \begin{equation}
+                                      a^{2} = b^{2} + c^{2}
+                                      \label{eqt:pytha}
+                                    \end{equation}
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                        \begin{onlyenv}<7>
+                            \begin{minted}{tex}
+                                \begin{document}
+                                  \maketitle
+                                  \tableofcontents
+                                  \section{Introduction}
+                                    \subsection{Sub-Intro}
+                                    Some actual text content
+                                    \begin{equation}
+                                      a^{2} = b^{2} + c^{2}
+                                      \label{eqt:pytha}
+                                    \end{equation}
+                                \end{document}
+                            \end{minted}
+                        \end{onlyenv}
+                    \end{column}
+                \end{columns}
+        \end{frame}
+    \section{High Quality Results}
+        \begin{frame}[fragile]
+            \frametitle{Equations}
+            \begin{itemize}
+                \item<only@1> Equations like Equation \ref{eqt:quadratic}
+                    % \begin{minted}{tex}
+                    % \begin{equation}
+                    % 0 = a_{2}x^{2} + a_{1}x + a_{0}
+                    % \label{eqt:quadratic}
+                    % \end{equation}
+                    % \end{minted}
+                    \begin{equation}
+                    0 = a_{2}x^{2} + a_{1}x + a_{0}
+                    \label{eqt:quadratic}
+                    \end{equation}
+                \item<only@2> Or a fancier Equations like the Fourier transform
+                    % \begin{minted}{tex}
+                    % \begin{equation}
+                    %   \hat{f}\left(\xi\right) = \int_{-\infty}^{\infty} f\left(\xi\right) e^{2\pi ix\xi}\mathrm{d}\xi
+                    %   \label{eqt:fourTrans}
+                    % \end{equation}
+                    % \end{minted}
+                    \begin{equation}
+                    \hat{f}\left(\xi\right) = \int_{-\infty}^{\infty}f\left(\xi\right)e^{2\pi ix\xi}\text{d}\xi
+                    \label{eqt:fourTrans}
+                    \end{equation}
+                \item<only@3> Figures and captions
+                    % \begin{columns}[onlytextwidth]%
+                    %     \begin{column}{0.5\textwidth}%
+                    %         \begin{minted}{tex}
+                    %         \begin{figure}
+                    %           \begin{centering}
+                    %             \includegraphics [width=0.8\textwidth] {Images/rootLocus.png}
+                    %             \caption{A test figure}
+                    %             \label{fig:test}
+                    %           \end{centering}
+                    %         \end{figure}
+                    %         \end{minted}
+                    %     \end{column}
+                    %     \begin{column}{0.5\textwidth}%
+                            \begin{figure}
+                                \begin{centering}
+                                    \includegraphics[width=0.8\textwidth]{Images/rootLocus.png}
+                                    \caption{A test figure}
+                                    \label{fig:test}
+                                \end{centering}
+                            \end{figure}
+                    %     \end{column}
+                    % \end{columns}
+                \item<only@4> Code blocks from external files
+                    \inputminted{python}{./demo.py}
+                \item<only@5> Tables like the following
+                %     \begin{minted}{tex}
+                %       \begin{table}[htbp]
+                %         \caption{Table of specific energies of different fuels}
+                %         \label{tab:specificEnergies}
+                %         \begin{tabular}{llr}
+                %           \toprule
+                %           \textbf{Reaction Kind} & \textbf{Fuel} & \textbf{\si{\joule\per\gram}}\\
+                %           \midrule
+                %           Nuclear Fusion & Deuterium & 5.71e11\\
+                %           Nuclear Fission & Uranium & 8.06e10\\
+                %           Oxidation & Methane (\ch{CH4}) & 5.56e4\\
+                %           Electrochemical & Lithium Ion Battery & 6.18e2\\
+                %           \bottomrule
+                %         \end{tabular}
+                %       \end{table}
+                %     \end{minted}
+                % \item<only@6> Tables like the following
+                    \begin{table}[htbp]
+                        \caption{Table of specific energies of different fuels}
+                        \label{tab:specificEnergies}
+                        \begin{tabular}{llr}
+                            \toprule
+                            \textbf{Reaction Kind} & \textbf{Fuel} & \textbf{\si{\joule\per\gram}}\\
+                            \midrule
+                            Nuclear Fusion & Deuterium & 5.71e11\\
+                            Nuclear Fission & Uranium & 8.06e10\\
+                            Oxidation & Methane (\ch{CH4}) & 5.56e4\\
+                            Electrochemical & Lithium Ion Battery & 6.18e2\\
+                            \bottomrule
+                        \end{tabular}
+                    \end{table}
+            \end{itemize}
+        \end{frame}
+        \begin{frame}
+            \frametitle{Automation, and Consistency}
+            \begin{itemize}
+                \item bibliography
+                    Citations are a breeze. \cite{acc:4}
+                    And the counting and formatting of the citations is handled based on the style I select! \cite{acc:6}
+                \item equation ref and numbering
+                    I can refer to any equation (like Equation \ref{eqt:quadratic}) or any figure (Figure \ref{fig:test}) or table (Table \ref{tab:specificEnergies}) and the order will always be correct, every time I compile the document
+            \end{itemize}
+        \end{frame}
+        \begin{frame}[fragile]
+            \frametitle{Modularity}
+            \begin{itemize}
+                \item Large blocks of code are highly recyclable
+                    \begin{itemize}
+                        \item Preambles
+                        \item Environment setups
+                        \item \mintinline{tex}{.bib} Bibliographies
+                    \end{itemize}
+            \end{itemize}
+        \end{frame}
+        \begin{frame}
+            \frametitle{Open Source}
+            \begin{itemize}
+                \item Easily accessed
+              \item Large active community
+                \item
+            \end{itemize}
+          \end{frame}
+    \section{Support and Resources}
+        \begin{frame}
+            \frametitle{Bibliography Generation}
+            \begin{itemize}
+                \item acronyms and glossaries
+                \item bibliography
+                \item equation ref and numbering
+            \end{itemize}
+        \end{frame}
+        \begin{frame}
+            \frametitle{This Code and Other Examples}
+            \begin{itemize}
+                \item acronyms and glossaries
+                \item bibliography
+                \item equation ref and numbering
+            \end{itemize}
+        \end{frame}
+        \begin{frame}
+            \frametitle{Troubleshooting and Questions}
+            \begin{itemize}
+                \item acronyms and glossaries
+                \item bibliography
+                \item equation ref and numbering
+            \end{itemize}
+        \end{frame}
+    \section{Backmatter}
+        \begin{frame}[allowframebreaks, noframenumbering, plain]
+            \frametitle{Bibliography}
+            \printbibliography
+        \end{frame}
+        \begin{frame}[allowframebreaks, noframenumbering, plain]
+            \frametitle{Acronyms}
+            \printglossary[type=\acronymtype]
+        \end{frame}
+        \begin{frame}[allowframebreaks, noframenumbering, plain]
+            \frametitle{Glossary}
+            \printglossary[type=main]
+        \end{frame}
+        \begin{frame}[allowframebreaks, noframenumbering, plain]
+            \frametitle{Constants}
+            \printglossary[type=constants, nonumberlist, nopostdot]
+        \end{frame}
+        \begin{frame}[allowframebreaks, noframenumbering, plain]
+            \frametitle{Symbols}
+            \printglossary[type=symbols]
+        \end{frame}
+\end{document}
