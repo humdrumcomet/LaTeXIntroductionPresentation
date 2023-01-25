@@ -36,7 +36,7 @@ This slide deck introduces and motivates document preparation with the typesetti
 To compile the presentation itself, LuaLaTeX is required.
 Usage of arara is preferred and the .tex file already contains arara directives. 
 
-## Contributors
+## Workshop Series Contributors
 
 * Ghassan Arnouk
 * Alec Bales D'Cruze
